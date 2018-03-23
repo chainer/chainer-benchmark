@@ -17,6 +17,14 @@ The benchmark can be run over Chainer v3.1.0+ or v4.0.0b1+.
 Usage
 -----
 
+To run one-shot benchmark against installed Chainer / CuPy:
+
+.. code-block:: sh
+
+    asv run --python=same --show-stderr
+
+To run benchmark to compare results between commits:
+
 .. code-block:: sh
 
     # Enable ccache for performance (optional).
