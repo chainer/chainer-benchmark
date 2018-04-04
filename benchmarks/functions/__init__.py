@@ -43,7 +43,13 @@ class FunctionBenchmark(BenchmarkBase):
         self.forward_inputs = ([self._convert_to_variable(x) for x in inputs])
 
         # Prepare for backward.
-        outputs = chainer.functions.identity(self.forward())
+        ret = self.forward()
+
+        if isinstance(ret, tuple):
+            outputs = chainer.functions.identity(*ret)
+        else:
+            outputs = chainer.functions.identity(ret)
+
         if isinstance(outputs, (list, tuple)):
             self.forward_outputs = outputs
         else:
