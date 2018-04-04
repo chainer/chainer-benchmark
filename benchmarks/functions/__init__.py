@@ -18,6 +18,18 @@ class FunctionBenchmark(BenchmarkBase):
     # Repeat the test for 10 times instead of 3 (`timeit.default_repeat`).
     repeat = 10
 
+    def _convert_to_variable(self, x):
+        """Maps each ndarray to a chainer.Variable.
+        """
+        if x is None:
+            return None
+        elif isinstance(x, (int, float, bool, str)):
+            return x
+        elif isinstance(x, (list, tuple)):
+            return ([self._convert_to_variable(elem) for elem in x])
+        else:
+            return chainer.Variable(x)
+
     def setup_benchmark(self, function, inputs, grad_outputs=None):
         """Performs setup of benchmark for functions.
 
@@ -27,8 +39,8 @@ class FunctionBenchmark(BenchmarkBase):
         self.function = function
 
         # Prepare for forward.
-        self.forward_inputs = (
-            [None if x is None else chainer.Variable(x) for x in inputs])
+
+        self.forward_inputs = ([self._convert_to_variable(x) for x in inputs])
 
         # Prepare for backward.
         outputs = chainer.functions.identity(self.forward())
