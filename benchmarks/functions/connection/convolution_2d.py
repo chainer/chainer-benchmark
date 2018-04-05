@@ -25,7 +25,7 @@ class Convolution2D(FunctionBenchmark):
             -1, 1, (batches, out_channels, 117, 117)).astype(xp.float32)
 
         # Setup benchmark.
-        self.setup_benchmark(F.convolution_2d, (x, W, b), (gy,))
+        self.setup_benchmark(F.convolution_2d, (x, W, b), gy)
 
     def time_forward(self):
         self.forward()

@@ -13,7 +13,7 @@ class Space2Depth(FunctionBenchmark):
         gy = xp.random.randn(128, 80, 30, 20).astype(xp.float32)
         r = 2
         func = lambda x: F.space2depth(x, r)
-        self.setup_benchmark(func, (x,), (gy,))
+        self.setup_benchmark(func, (x,), gy)
 
     def time_forward(self):
         self.forward()
