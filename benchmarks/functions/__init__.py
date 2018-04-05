@@ -45,6 +45,19 @@ class FunctionBenchmark(BenchmarkBase):
         return None if x is None else tuple(rec(x))
 
 
+    def _check_format(self, outputs, grad_outputs):
+        """Checks if both of the inputs have the same format.
+        """
+        outputs_is_list = isinstance(outputs, (list, tuple))
+        grad_outputs_is_list = isinstance(grad_outputs, (list, tuple))
+        if (outputs_is_list and grad_outputs_is_list):
+            assert len(outputs) == len(grad_outputs)
+            for i in range(len(outputs)):
+                self._check_format(outputs[i], grad_outputs[i])
+        else:
+            assert not (outputs_is_list or grad_outputs_is_list)
+
+
     def setup_benchmark(self, function, inputs, grad_outputs=None):
         """Performs setup of benchmark for functions.
 
@@ -58,19 +71,20 @@ class FunctionBenchmark(BenchmarkBase):
         self.forward_inputs = ([self._convert_to_variable(x) for x in inputs])
 
         # Prepare for backward.
-        outputs = chainer.functions.identity(
-            *self._normalize_outputs(self.forward()))
+        outputs = self.forward()
+        normalized_outputs = chainer.functions.identity(
+            *self._normalize_outputs(outputs))
 
         if isinstance(outputs, (list, tuple)):
-            self.forward_outputs = outputs
+            self.forward_outputs = normalized_outputs
         else:
-            self.forward_outputs = outputs,
+            self.forward_outputs = normalized_outputs,
 
         if grad_outputs is not None:
-            grad_outputs = self._normalize_outputs(grad_outputs)
-            assert len(grad_outputs) == len(self.forward_outputs)
-            for i in range(len(grad_outputs)):
-                self.forward_outputs[i].grad = grad_outputs[i]
+            self._check_format(outputs, grad_outputs)
+            normalized_grad_outputs = self._normalize_outputs(grad_outputs)
+            for i in range(len(normalized_grad_outputs)):
+                self.forward_outputs[i].grad = normalized_grad_outputs[i]
 
     def forward(self):
         """Runs forward computation."""
@@ -94,6 +108,6 @@ class UnaryMathFunctionBenchmark(FunctionBenchmark):
         inputs = (self.xp.arange(
             functools.reduce(operator.mul, shape),
             dtype=dtype).reshape(shape) + 1,)
-        grad_outputs = (self.xp.array(inputs[0]),)
+        grad_outputs = self.xp.array(inputs[0])
         super(UnaryMathFunctionBenchmark, self).setup_benchmark(
             function, inputs, grad_outputs)
