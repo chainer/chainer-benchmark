@@ -51,11 +51,16 @@ class FunctionBenchmark(BenchmarkBase):
         outputs_is_list = isinstance(outputs, (list, tuple))
         grad_outputs_is_list = isinstance(grad_outputs, (list, tuple))
         if (outputs_is_list and grad_outputs_is_list):
-            assert len(outputs) == len(grad_outputs)
+            if len(outputs) != len(grad_outputs):
+                msg = ("Number of outputs and grad_outputs mismatch.\n" +
+                       "outputs : %d != grad_outputs : %d\n" %
+                       (len(outputs), len(grad_outputs)))
+                raise ValueError(msg)
             for i in range(len(outputs)):
                 self._check_format(outputs[i], grad_outputs[i])
-        else:
-            assert not (outputs_is_list or grad_outputs_is_list)
+        elif outputs_is_list or grad_outputs_is_list:
+            msg = ("Type of outputs and grad_outputs mismatch.\n")
+            raise TypeError(msg)
 
 
     def setup_benchmark(self, function, inputs, grad_outputs=None):
