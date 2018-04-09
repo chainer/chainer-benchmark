@@ -45,7 +45,7 @@ class FunctionBenchmark(BenchmarkBase):
         """Checks if both of the inputs have the same format."""
         outputs_is_list = isinstance(outputs, (list, tuple))
         grad_outputs_is_list = isinstance(grad_outputs, (list, tuple))
-        if (outputs_is_list and grad_outputs_is_list):
+        if outputs_is_list and grad_outputs_is_list:
             if len(outputs) != len(grad_outputs):
                 msg = ("Number of outputs and grad_outputs mismatch.\n" +
                        "outputs : %d != grad_outputs : %d\n" %
