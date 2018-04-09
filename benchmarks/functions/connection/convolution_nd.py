@@ -6,7 +6,7 @@ from benchmarks.functions import FunctionBenchmark
 from benchmarks.utils import backends
 
 
-@backends('gpu', 'gpu-cudnn', 'cpu', 'cpu-ideep')
+@backends('gpu', 'gpu-cudnn', 'cpu')
 class ConvolutionND(FunctionBenchmark):
     def setup(self):
         xp = self.xp

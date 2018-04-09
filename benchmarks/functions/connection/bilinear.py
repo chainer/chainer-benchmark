@@ -6,7 +6,7 @@ from benchmarks.functions import FunctionBenchmark
 from benchmarks.utils import backends
 
 
-@backends('gpu', 'gpu-cudnn', 'cpu', 'cpu-ideep')
+@backends('gpu', 'cpu')
 class Bilinear(FunctionBenchmark):
     def setup(self):
         xp = self.xp
