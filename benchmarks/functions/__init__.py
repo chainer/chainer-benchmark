@@ -19,8 +19,7 @@ class FunctionBenchmark(BenchmarkBase):
     repeat = 10
 
     def _convert_to_variable(self, x):
-        """Maps each ndarray to a chainer.Variable.
-        """
+        """Maps each ndarray to a chainer.Variable."""
         if x is None:
             return None
         elif isinstance(x, (int, float, bool, str)):
@@ -30,10 +29,8 @@ class FunctionBenchmark(BenchmarkBase):
         else:
             return chainer.Variable(x)
 
-
     def _normalize_outputs(self, x):
-        """Flattens outputs into a single tuple.
-        """
+        """Flattens outputs into a single tuple."""
         def rec(x):
             if isinstance(x, (list, tuple)):
                 ret = []
@@ -44,10 +41,8 @@ class FunctionBenchmark(BenchmarkBase):
                 return [x]
         return None if x is None else tuple(rec(x))
 
-
     def _check_format(self, outputs, grad_outputs):
-        """Checks if both of the inputs have the same format.
-        """
+        """Checks if both of the inputs have the same format."""
         outputs_is_list = isinstance(outputs, (list, tuple))
         grad_outputs_is_list = isinstance(grad_outputs, (list, tuple))
         if (outputs_is_list and grad_outputs_is_list):
@@ -61,7 +56,6 @@ class FunctionBenchmark(BenchmarkBase):
         elif outputs_is_list or grad_outputs_is_list:
             msg = ("Type of outputs and grad_outputs mismatch.\n")
             raise TypeError(msg)
-
 
     def setup_benchmark(self, function, inputs, grad_outputs=None):
         """Performs setup of benchmark for functions.
