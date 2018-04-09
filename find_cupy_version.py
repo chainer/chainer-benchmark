@@ -2,8 +2,8 @@
 
 import argparse
 import re
-import sys
 import subprocess
+import sys
 
 
 def _git(*args):
