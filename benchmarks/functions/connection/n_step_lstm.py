@@ -44,7 +44,7 @@ class NStepLSTM(FunctionBenchmark):
         dhy = xp.random.uniform(-1, 1, hx_shape).astype(xp.float32)
         dcy = xp.random.uniform(-1, 1, hx_shape).astype(xp.float32)
         dys = [xp.random.uniform(-1, 1, (b, out_size))
-                    .astype(xp.float32) for b in batches]
+               .astype(xp.float32) for b in batches]
 
         # Setup benchmark.
         self.setup_benchmark(F.n_step_lstm,

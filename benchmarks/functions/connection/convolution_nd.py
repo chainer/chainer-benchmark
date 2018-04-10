@@ -24,7 +24,7 @@ class ConvolutionND(FunctionBenchmark):
         in_shape = (batches, in_channels) + in_size
         W_shape = (out_channels, in_channels) + filter_size
         out_shape = (batches, out_channels) + out_size
-        
+
         x = xp.random.uniform(-1, 1, in_shape).astype(xp.float32)
         W = xp.random.normal(0, W_scale, W_shape).astype(xp.float32)
         b = xp.random.uniform(-1, 1, out_channels).astype(xp.float32)
