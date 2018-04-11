@@ -2,15 +2,16 @@ import chainer.functions as F
 
 from benchmarks.functions import FunctionBenchmark
 from benchmarks.utils import backends
+from benchmarks.utils import parameterize
 
 
 @backends('gpu', 'gpu-cudnn', 'cpu')
+@parameterize([('batches', [[1, 1, 1], [8, 4, 2]])])
 class NStepGRU(FunctionBenchmark):
-    def setup(self):
+    def setup(self, batches):
         xp = self.xp
 
         # Prepare test data.
-        batches = [8, 4, 2]
         n_layers = 3
         in_size = 24
         out_size = 16
@@ -49,8 +50,8 @@ class NStepGRU(FunctionBenchmark):
                              (n_layers, dropout, hx, ws, bs, xs),
                              (dhy, dys))
 
-    def time_forward(self):
+    def time_forward(self, batches):
         self.forward()
 
-    def time_backward(self):
+    def time_backward(self, batches):
         self.backward()
