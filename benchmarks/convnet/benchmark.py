@@ -74,19 +74,19 @@ class _ConvnetBase(BenchmarkBase):
         self._out.backward()
 
 
-@backends('gpu', 'gpu-cudnn')
+@backends('gpu', 'gpu-cudnn', 'cpu', 'cpu-ideep')
 @parameterize([
     ('arch', ['vgga']),
-    ('batchsize', [32]),
+    ('batchsize', [1, 32]),
 ])
 class ConvnetVGGA(_ConvnetBase):
     pass
 
 
-@backends('gpu', 'gpu-cudnn')
+@backends('gpu', 'gpu-cudnn', 'cpu', 'cpu-ideep')
 @parameterize([
     ('arch', ['alexnet', 'googlenet', 'overfeat']),
-    ('batchsize', [128]),
+    ('batchsize', [1, 32]),
 ])
 class ConvnetOthers(_ConvnetBase):
     pass
