@@ -3,6 +3,7 @@ from chainer import optimizers
 
 from benchmarks import BenchmarkBase
 from benchmarks.utils import backends
+from benchmarks.utils import config
 from benchmarks.utils import is_backend_gpu
 from benchmarks.utils import is_backend_ideep
 from benchmarks.utils import parameterize
@@ -74,6 +75,7 @@ class _ConvnetBase(BenchmarkBase):
         self._out.backward()
 
 
+@config('lazy_grad_sum', [True, False])
 @backends('gpu', 'gpu-cudnn', 'cpu', 'cpu-ideep')
 @parameterize([
     ('arch', ['vgga']),
@@ -83,6 +85,7 @@ class ConvnetVGGA(_ConvnetBase):
     pass
 
 
+@config('lazy_grad_sum', [True, False])
 @backends('gpu', 'gpu-cudnn', 'cpu', 'cpu-ideep')
 @parameterize([
     ('arch', ['alexnet', 'googlenet', 'overfeat']),
