@@ -47,6 +47,7 @@ class GoogLeNet(chainer.Chain):
         h = F.max_pooling_2d(h, 3, stride=2)
         h = self.inc4a(h)
 
+        out1 = None
         if chainer.config.train:
             out1 = F.average_pooling_2d(h, 5, stride=3)
             out1 = F.relu(self.loss1_conv(out1))
@@ -57,6 +58,7 @@ class GoogLeNet(chainer.Chain):
         h = self.inc4c(h)
         h = self.inc4d(h)
 
+        out2 = None
         if chainer.config.train:
             out2 = F.average_pooling_2d(h, 5, stride=3)
             out2 = F.relu(self.loss2_conv(out2))
