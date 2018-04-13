@@ -41,6 +41,17 @@ class DummyDataGenerator(object):
 
         return self._vocab_size
 
+    def _generate_sentence(self, xp):
+        """Returns the dummy sentence.
+
+        The returned value is a single ``xp.ndarray``.
+        """
+
+        # +2 for UNK and EOS
+        sentence = xp.arange(self._words_per_data, dtype=xp.int32) + 2
+        xp.random.shuffle(sentence)
+        return sentence
+
     def generate_training_data(self, xp):
         """Returns the dummy data for training.
 
@@ -49,9 +60,8 @@ class DummyDataGenerator(object):
         a set of source sentence and target sentence.
         """
 
-        # +2 for UNK and EOS
-        sentence = xp.arange(self._words_per_data, dtype=xp.int32) + 2
-        return [(sentence,) * 2] * self._count
+        return [(self._generate_sentence(xp), self._generate_sentence(xp))
+                 for _ in range(self._count)]
 
     def generate_validation_data(self, xp):
         """Returns the dummy data for validation.
@@ -60,9 +70,7 @@ class DummyDataGenerator(object):
         a input sentence.
         """
 
-        # +2 for UNK and EOS
-        sentence = xp.arange(self._words_per_data, dtype=xp.int32) + 2
-        return [sentence] * self._count
+        return [self._generate_sentence(xp) for _ in range(self._count)]
 
 
 def _convert(batch, device):
