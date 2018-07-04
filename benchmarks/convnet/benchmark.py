@@ -68,32 +68,34 @@ class _ConvnetBase(BenchmarkBase):
         self._model = model
         self._out = out
 
+
+@backends('gpu', 'gpu-cudnn', 'cpu', 'cpu-ideep')
+@parameterize([
+    ('arch', ['alexnet', 'googlenet', 'overfeat', 'vgga']),
+    ('batchsize', [1, 32]),
+])
+class ConvnetInference(_ConvnetBase):
     def time_inference(self, arch, batchsize):
         with chainer.no_backprop_mode(), chainer.using_config('train', False):
             self._model.forward(self._x)
 
+
+@backends('gpu', 'gpu-cudnn', 'cpu', 'cpu-ideep')
+@parameterize([
+    ('arch', ['alexnet', 'googlenet', 'overfeat', 'vgga']),
+    ('batchsize', [1, 32]),
+])
+class ConvnetForward(_ConvnetBase):
     def time_forward(self, arch, batchsize):
         self._model.forward(self._x)
 
+
+@config('lazy_grad_sum', [True, False])
+@backends('gpu', 'gpu-cudnn', 'cpu', 'cpu-ideep')
+@parameterize([
+    ('arch', ['alexnet', 'googlenet', 'overfeat', 'vgga']),
+    ('batchsize', [1, 32]),
+])
+class ConvnetBackward(_ConvnetBase):
     def time_backward(self, arch, batchsize):
         self._out.backward()
-
-
-@config('lazy_grad_sum', [True, False])
-@backends('gpu', 'gpu-cudnn', 'cpu', 'cpu-ideep')
-@parameterize([
-    ('arch', ['vgga']),
-    ('batchsize', [1, 32]),
-])
-class ConvnetVGGA(_ConvnetBase):
-    pass
-
-
-@config('lazy_grad_sum', [True, False])
-@backends('gpu', 'gpu-cudnn', 'cpu', 'cpu-ideep')
-@parameterize([
-    ('arch', ['alexnet', 'googlenet', 'overfeat']),
-    ('batchsize', [1, 32]),
-])
-class ConvnetOthers(_ConvnetBase):
-    pass
