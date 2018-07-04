@@ -1,5 +1,6 @@
 from functools import wraps
 import inspect
+import os
 import warnings
 
 import chainer
@@ -24,6 +25,14 @@ _backend_modes = [
     # CPU (with use_ideep == 'auto')
     'cpu-ideep',
 ]
+
+_enabled_backend_modes = (
+    os.environ['CHAINER_BENCHMARK_BACKENDS'].split(',')
+    if 'CHAINER_BENCHMARK_BACKENDS' in os.environ
+    else _backend_modes
+)
+
+assert all([x in _backend_modes for x in _enabled_backend_modes])
 
 
 def backends(*modes):
@@ -62,6 +71,11 @@ def backends(*modes):
     ... class ConvolutionBenchmark(object):
     ...     def time_benchmark(self):
     ...         ...
+
+    You can temporarily limit the backend variation by setting list of
+    comma-separted backend names to CHAINER_BENCHMARK_BACKENDS environment
+    variable. For example, ``CHAINER_BENCHMARK_BACKENDS=gpu-cudnn,cpu-ideep``
+    can be used to skip running benchmark for ``gpu`` and ``cpu``.
     """
 
     assert all([m in _backend_modes for m in modes])
@@ -98,7 +112,11 @@ def _inject_backend_mode(klass, modes):
                 use_ideep = 'never'
 
                 target = f
-                if backend.startswith('gpu'):
+                if backend not in _enabled_backend_modes:
+                    # Raise in `setup` to skip this parameter axis.
+                    warnings.warn('Backend disabled: {}'.format(backend))
+                    raise NotImplementedError
+                elif backend.startswith('gpu'):
                     xp = cupy
                     _benchmark_backend_gpu = True
                     target = sync(target)
