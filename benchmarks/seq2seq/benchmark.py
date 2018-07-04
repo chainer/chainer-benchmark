@@ -1,5 +1,3 @@
-import numpy
-
 import chainer
 from chainer import training
 
@@ -61,7 +59,7 @@ class DummyDataGenerator(object):
         """
 
         return [(self._generate_sentence(xp), self._generate_sentence(xp))
-                 for _ in range(self._count)]
+                for _ in range(self._count)]
 
     def generate_validation_data(self, xp):
         """Returns the dummy data for validation.
