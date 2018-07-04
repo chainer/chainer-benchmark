@@ -4,15 +4,16 @@ import chainer.functions as F
 
 from benchmarks.functions import FunctionBenchmark
 from benchmarks.utils import backends
+from benchmarks.utils import parameterize
 
 
 @backends('gpu', 'cpu')
+@parameterize([('batches', [1, 16])])
 class DepthwiseConvolution2D(FunctionBenchmark):
-    def setup(self):
+    def setup(self, batches):
         xp = self.xp
 
         # Prepare test data.
-        batches = 32
         in_channels = 8
         channel_multiplier = 2
         in_size = (128, 128)
@@ -35,8 +36,8 @@ class DepthwiseConvolution2D(FunctionBenchmark):
         # Setup benchmark.
         self.setup_benchmark(F.depthwise_convolution_2d, (x, W, b), gy)
 
-    def time_forward(self):
+    def time_forward(self, batches):
         self.forward()
 
-    def time_backward(self):
+    def time_backward(self, batches):
         self.backward()

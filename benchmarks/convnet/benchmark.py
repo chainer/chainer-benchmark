@@ -68,6 +68,10 @@ class _ConvnetBase(BenchmarkBase):
         self._model = model
         self._out = out
 
+    def time_inference(self, arch, batchsize):
+        with chainer.no_backprop_mode(), chainer.using_config('train', False):
+            self._model.forward(self._x)
+
     def time_forward(self, arch, batchsize):
         self._model.forward(self._x)
 

@@ -4,18 +4,19 @@ import chainer.functions as F
 
 from benchmarks.functions import FunctionBenchmark
 from benchmarks.utils import backends
+from benchmarks.utils import parameterize
 
 
 @backends('gpu', 'cpu')
+@parameterize([('batches', [1, 16])])
 class Bilinear(FunctionBenchmark):
-    def setup(self):
+    def setup(self, batches):
         xp = self.xp
 
         def uniform(*shape):
             return xp.random.uniform(-1, 1, shape).astype(numpy.float32)
 
         # Prepare test data.
-        batches = 16
         e1_shape = (batches, 16)
         e2_shape = (batches, 20)
         e1_size = numpy.prod(e1_shape[1])
@@ -33,8 +34,8 @@ class Bilinear(FunctionBenchmark):
         # Setup benchmark.
         self.setup_benchmark(F.bilinear, (e1, e2, W, V1, V2, b), gy)
 
-    def time_forward(self):
+    def time_forward(self, batches):
         self.forward()
 
-    def time_backward(self):
+    def time_backward(self, batches):
         self.backward()
