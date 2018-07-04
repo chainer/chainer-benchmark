@@ -12,6 +12,8 @@ from benchmarks.seq2seq.seq2seq import Seq2seq
 @backends('gpu', 'gpu-cudnn')
 class Benchmark(BenchmarkBase):
 
+    number = 1
+
     def setup(self):
         self._app = Application()
 
@@ -78,7 +80,8 @@ def _convert(batch, device):
 
 class Application(object):
 
-    def __init__(self, unit=1024, layer=3, dummy_data=None):
+    def __init__(self, unit=1024, layer=3, train_batchsize=64, train_epoch=3,
+                 dummy_data=None):
         # Setup dummy data generator
         if dummy_data is None:
             dummy_data = {}
@@ -86,33 +89,32 @@ class Application(object):
         vocab_size = generator.get_vocab_size()
 
         # Setup model
-        self.model = Seq2seq(layer, vocab_size, vocab_size, unit)
-        self.gpu = -1
+        model = Seq2seq(layer, vocab_size, vocab_size, unit)
+        gpu = -1
         if is_backend_gpu():
-            self.gpu = 0
-            chainer.cuda.get_device_from_id(self.gpu).use()
-            self.model.to_gpu()
+            gpu = 0
+            chainer.cuda.get_device_from_id(gpu).use()
+            model.to_gpu()
         elif is_backend_ideep():
-            self.model.to_intel64()
+            model.to_intel64()
 
         # Generate dummy data for training and validation
-        xp = self.model.xp
-        self.train_data = generator.generate_training_data(xp)
-        self.validate_data = generator.generate_validation_data(xp)
+        xp = model.xp
+        train_data = generator.generate_training_data(xp)
+        validate_data = generator.generate_validation_data(xp)
 
-    def train(self, batchsize=64, epoch=3):
         # Setup optimizer
         optimizer = chainer.optimizers.Adam()
-        optimizer.setup(self.model)
+        optimizer.setup(model)
 
         # Setup iterator
         train_iter = chainer.iterators.SerialIterator(
-            self.train_data, batchsize)
+            train_data, train_batchsize)
 
         # Setup updater and trainer
         updater = training.updaters.StandardUpdater(
-            train_iter, optimizer, converter=_convert, device=self.gpu)
-        trainer = training.Trainer(updater, (epoch, 'epoch'))
+            train_iter, optimizer, converter=_convert, device=gpu)
+        trainer = training.Trainer(updater, (train_epoch, 'epoch'))
 
         # Add extensions (for debugging)
         trainer.extend(training.extensions.LogReport(
@@ -121,8 +123,14 @@ class Application(object):
             ['epoch', 'iteration', 'main/loss', 'main/perp', 'elapsed_time']),
             trigger=(1, 'epoch'))
 
+        # Variables to be used in the benchmark.
+        self.trainer = trainer
+        self.model = model
+        self.validate_data = validate_data
+
+    def train(self):
         # Start training
-        trainer.run()
+        self.trainer.run()
 
     def translate(self):
         self.model.translate(self.validate_data)
