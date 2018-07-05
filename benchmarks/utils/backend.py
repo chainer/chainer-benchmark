@@ -73,7 +73,7 @@ def backends(*modes):
     ...         ...
 
     You can temporarily limit the backend variation by setting list of
-    comma-separted backend names to CHAINER_BENCHMARK_BACKENDS environment
+    comma-separated backend names to CHAINER_BENCHMARK_BACKENDS environment
     variable. For example, ``CHAINER_BENCHMARK_BACKENDS=gpu-cudnn,cpu-ideep``
     can be used to skip running benchmark for ``gpu`` and ``cpu``.
     """
