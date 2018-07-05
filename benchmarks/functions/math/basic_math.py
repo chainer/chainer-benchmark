@@ -3,8 +3,8 @@ import operator
 
 import numpy
 
-import chainer.functions as F
 from chainer.backends import intel64
+import chainer.functions as F
 
 from benchmarks.functions import FunctionBenchmark
 from benchmarks.utils import backends
