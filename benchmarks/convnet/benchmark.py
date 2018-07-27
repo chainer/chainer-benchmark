@@ -54,19 +54,8 @@ class _ConvnetBase(BenchmarkBase):
                         model.insize), dtype=xp.float32)
         x.fill(33333)
 
-        if arch == 'googlenet':
-            out1, out2, out3 = model.forward(x)
-            out = out1 + out2 + out3
-        else:
-            out = model.forward(x)
-
-        out.zerograd()
-        out.grad.fill(3)
-        model.cleargrads()
-
         self._x = x
         self._model = model
-        self._out = out
 
 
 @backends('gpu', 'gpu-cudnn', 'cpu', 'cpu-ideep')
@@ -97,5 +86,20 @@ class ConvnetForward(_ConvnetBase):
     ('batchsize', [1, 32]),
 ])
 class ConvnetBackward(_ConvnetBase):
+    def setup(self, arch, batchsize):
+        super(ConvnetBackward, self).setup(arch, batchsize)
+
+        if arch == 'googlenet':
+            out1, out2, out3 = self._model.forward(self._x)
+            out = out1 + out2 + out3
+        else:
+            out = self._model.forward(self._x)
+
+        out.zerograd()
+        out.grad.fill(3)
+        self._model.cleargrads()
+
+        self._out = out
+
     def time_backward(self, arch, batchsize):
         self._out.backward()
