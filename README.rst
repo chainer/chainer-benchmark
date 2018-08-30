@@ -12,7 +12,7 @@ You need to install ``asv`` benchmark framework and ``Cython`` (to build CuPy).
 
     pip install asv Cython
 
-The benchmark can be run over Chainer v3.1.0+ or v4.0.0b1+.
+The benchmark can be run over Chainer v4.0.0b1+.
 
 Usage
 -----
